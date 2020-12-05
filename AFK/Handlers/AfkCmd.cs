@@ -1,9 +1,8 @@
-﻿using CommandSystem;
+using CommandSystem;
 using Exiled.API.Features;
 using RemoteAdmin;
 using System;
 using System.Linq;
-using static AFK.AFK;
 
 namespace AFK
 {
@@ -21,13 +20,19 @@ namespace AFK
             if (sender is PlayerCommandSender player)
             {
                 Player p = Player.Get(player.SenderId);
-                p.IsOverwatchEnabled = !p.IsOverwatchEnabled; // set overwatch to the player
-                response = p.IsOverwatchEnabled // ? = first time doing the command. : = second time
-                    ? "You have been set to overwatch mode.\nYou will not respawn."
-                    : "You have been removed from overwatch mode.\nYou may now respawn.";
+                if (Handlers.Server.afk_players.Contains(p) == true) {
+                    Handlers.Server.afk_players.Add(p);
+                } else
+                {
+                    Handlers.Server.afk_players.Remove(p);
+
+                }
+                response = Handlers.Server.afk_players.Contains(p)
+                    ? AFK.Instance.Config.AddedToAFK
+                    : AFK.Instance.Config.RemovedFromAFK;
                 return true;
             }
-            if (Player.List.Count() >= Singleton.Config.Maxplayers)
+            if (Handlers.Server.afk_players.Count() >= AFK.Instance.Config.Maxplayers)
             {
                 response = "Too many players";
                 return false;
