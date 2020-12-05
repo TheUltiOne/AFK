@@ -1,35 +1,68 @@
-﻿using System;
-
 using Exiled.API.Features;
 using Exiled.API.Enums;
-namespace AFK
+
+using Server = Exiled.Events.Handlers.Server;
+using Player = Exiled.Events.Handlers.Player;
+using Map = Exiled.Events.Handlers.Map;
+using System;
+
+namespace MurderMystery
 {
-    public class AFK : Plugin<Config>
+    public class MurderMystery : Plugin<Config>
     {
-        public override string Name { get; } = "AFK";
-        public override string Author { get; } = "TypicalIllusion";
-        public override Version Version { get; } = new Version(2, 0, 0);
-        public override Version RequiredExiledVersion { get; } = new Version(2, 1, 18);
-        public override string Prefix { get; } = "AFK";
+        private static readonly Lazy<MurderMystery> LazyInstance = new Lazy<MurderMystery>(valueFactory: () => new MurderMystery());
+        public static MurderMystery Instance => LazyInstance.Value;
 
-        public override PluginPriority Priority { get; } = PluginPriority.Low;
+        public override PluginPriority Priority { get; } = PluginPriority.Medium;
+        private Handlers.Server server;
+        private Handlers.Player player;
+        private Handlers.Map map;
 
-        public static bool enabledInGame = true;
-
-        public static AFK Singleton;
-
-        public override void OnReloaded()
+        private MurderMystery()
         {
-            base.OnReloaded();
         }
 
         public override void OnEnabled()
         {
-            base.OnEnabled();
+            RegisterEvents();
         }
+
         public override void OnDisabled()
         {
-            base.OnDisabled();
+            UnregisterEvents();
+        }
+
+        public void RegisterEvents()
+        {
+            player = new Handlers.Player();
+            server = new Handlers.Server();
+            map = new Handlers.Map();
+
+            Player.Hurting += player.OnHurting;
+            Player.Died += player.OnDied;
+            Player.Dying += player.OnDying;
+
+            Server.RoundStarted += server.OnRoundStarted;
+            Server.RespawningTeam += server.Respawning;
+
+            Map.Decontaminating += map.OnDecontaminating;
+        }
+
+        public void UnregisterEvents()
+        {
+
+
+            Player.Hurting -= player.OnHurting;
+            Player.Died -= player.OnDied;
+            Player.Dying -= player.OnDying;
+            player = null;
+
+            Server.RoundStarted -= server.OnRoundStarted;
+            Server.RespawningTeam -= server.Respawning;
+            server = null;
+
+            Map.Decontaminating -= map.OnDecontaminating;
+            map = null;
         }
     }
 }
