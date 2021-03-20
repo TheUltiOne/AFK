@@ -38,8 +38,8 @@ namespace AFK
                 }
 
                 response = Handlers.AFKHandlers.afk_players.Contains(p)
-                    ? AFK.Instance.Config.RemovedFromAFK
-                    : AFK.Instance.Config.AddedToAFK;
+                    ? AFK.Instance.Config.AddedToAFK
+                    : AFK.Instance.Config.RemovedFromAFK;
                 return true;
             }
 
