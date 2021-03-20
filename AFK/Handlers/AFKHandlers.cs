@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 
@@ -14,7 +15,7 @@ namespace AFK.Handlers
 
         public void OnRespawningTeam(RespawningTeamEventArgs ev)
         {
-            foreach (Player i in ev.Players)
+            foreach (Player i in ev.Players.ToList())
             {
                 if (afk_players.Contains(i))
                 {
